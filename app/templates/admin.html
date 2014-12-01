@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class=flashes>
+    {% for message in messages %}
+        <li>{{message}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+<h1>Admin Console</h1>
+<h2>Create an Album</h2>
+<form method=POST action="{{ url_for('createAlbum') }}" name=createAlbum>
+    {{ createAlbumForm.hidden_tag() }}
+    {{ render_field(createAlbumForm.name) }}
+    {{ render_field(createAlbumForm.description) }}
+    <div><input type="submit" value="Create Album"></div>
+</form>
+<h2>Edit Albums</h2>
+{% for album in albums %}
+<a href='{{ url_for("editAlbum", id=album.id) }}'>{{ album.name }}</a><br>
+{% endfor %}
+{% endblock %}

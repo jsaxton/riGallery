@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <table><tr>
+    {% for album in albums %}
+    {% if album.numImages > 0 %}
+    <td valign="top">
+    <b>{{album.name}}</b><br>
+    {% if album.numImages == 1 %}
+    <i>{{album.numImages}} Image</i><br>
+    {% else %}
+    <i>{{album.numImages}} Images</i><br>
+    {% endif %}
+    <!-- TODO: Handle album.coverImageId == 0, None -->
+    <a href='{{url_for('viewAlbum', id=album.id)}}' id="{{album.id}}" title='{{album.description}}'><img src='{{url_for('thumbnail', id=1)}}' alt='{{album.description}}'/></a><br>
+    {{album.description}}
+    </td>
+    {% endif %}
+    {% endfor %}
+    </tr></table>
+{% endblock %}

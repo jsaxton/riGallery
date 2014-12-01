@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+<!-- It would be cool to use Google's CDN to get jquery. However, trusting a third party to run javascript in the browser seems like a terrible idea, so I should add some sort of signature checking mechanism, then fall back to a local copy if needed. -->
+{% block head %}
+    <script src="{{url_for("static", filename="contrib/jquery/jquery-2.1.1.min.js")}}"></script>
+    <script src="{{url_for("static", filename="contrib/jquery-ui/jquery-ui.min.js")}}"></script>
+    <script src="{{url_for("static", filename="contrib/plupload/moxie.min.js")}}"></script>
+    <script src="{{url_for("static", filename="contrib/plupload/plupload.dev.js")}}"></script>
+    <script src="{{url_for("static", filename="contrib/plupload/jquery.ui.plupload/jquery.ui.plupload.js")}}"></script>
+    <link type="text/css" rel="stylesheet" href="{{url_for("static", filename="contrib/jquery-ui/jquery-ui.min.css")}}" media="screen" />
+    <link type="text/css" rel="stylesheet" href="{{url_for("static", filename="contrib/plupload/jquery.ui.plupload/css/jquery.ui.plupload.css")}}" media="screen" />
+    <style>
+    .img-wrap {
+        position: relative;
+        display: inline-block;
+        font-size: 0;
+    }
+    .img-wrap .close {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        z-index: 100;
+        background-color: #FFF;
+        padding: 5px 2px 2px;
+        color: #000;
+        font-weight: bold;
+        cursor: pointer;
+        opacity: .2;
+        text-align: center;
+        font-size: 22px;
+        line-height: 10px;
+        border-radius: 50%;
+    }
+    .img-wrap:hover .close {
+        opacity: 1;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class=flashes>
+    {% for message in messages %}
+        <li>{{message}}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+<h2>Edit an Album</h2>
+<form method=POST action="{{ url_for('editAlbum', id=album.id) }}" name=editAlbum>
+    {{ editAlbumForm.hidden_tag() }}
+    {{ render_field(editAlbumForm.name) }}
+    {{ render_field(editAlbumForm.description) }}
+    {{ render_field(editAlbumForm.coverImageId) }}
+    <div><input type="submit" value="Edit Album">
+</form>
+<form method=POST action="{{ url_for('deleteAlbum', id=album.id) }}" name=deleteAlbum>
+    <!-- TODO: Require confirmation -->
+    <input type="submit" value="Delete Album">
+</form></div><br>
+
+<h2>Upload Images</h2>
+<div id="uploader">
+    <p>Your browser doesn't have Flash, Silverlight or HTML5 support.</p>
+</div>
+ 
+<script type="text/javascript">
+// Initialize the widget when the DOM is ready
+$(function() {
+    $("#uploader").plupload({
+        // General settings
+        runtimes : 'html5,flash,silverlight,html4',
+        url : "{{ url_for('uploadPicture', albumId=album.id) }}",
+ 
+        // Maximum file size
+        max_file_size : '{{maxUploadMb}}mb',
+ 
+        // Specify what files to browse for
+        filters : [
+            {title : "Image files", extensions : "jpg,gif,png,jpeg"},
+        ],
+ 
+        // Rename files by clicking on their titles
+        rename: true,
+         
+        // Sort files
+        sortable: true,
+ 
+        // Enable ability to drag'n'drop files onto the widget (currently only HTML5 supports that)
+        dragdrop: true,
+ 
+        // Views to activate
+        views: {
+            list: true,
+            thumbs: true, // Show thumbs
+            active: 'thumbs'
+        },
+ 
+        // Flash settings
+        flash_swf_url : '/plupload/js/Moxie.swf',
+     
+        // Silverlight settings
+        silverlight_xap_url : '/plupload/js/Moxie.xap'
+    });
+});
+</script>
+
+<h2>Edit Images</h2>
+    <table>
+    {% for image in album.images %}
+    <tr class="imageRow{{image.id}}"><td>
+    <div class="img-wrap">
+        <span class="close">&times;</span>
+        <img src='{{url_for('thumbnail', id=image.id)}}' alt='Image {{image.id}}' data-id='{{image.id}}'/>
+    </div>
+    </td><td>
+    <form id="updateDescription{{image.id}}" action={{url_for('updatePictureDescription', id=image.id)}} method="POST" class="imageDescription">
+        <textarea rows="2" cols="70" name="description">{% if image.description != None %}{{image.description}}{% endif %}</textarea>
+    </form>
+    </td></tr>
+    {% else %}
+    No Photos
+    {% endfor %}
+    </table>
+    <script>
+    $(function() {
+        $(".imageDescription").on("change", function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr("action"),
+                type: 'POST',
+                data: $(this).serialize(),
+                error: function() {
+                    alert("Failed to update description");
+                },
+            });
+        });
+    });
+    $(function() {
+        $('.img-wrap .close').on('click', function(e) {
+            var id = $(this).closest('.img-wrap').find('img').data('id');
+            var dataObject = {};
+            dataObject["id"] = id;
+            e.preventDefault();
+            $.ajax({
+                url: "{{url_for('deletePicture')}}",
+                type: 'POST',
+                data: {"id":id},
+                error: function() {
+                    alert("Failed to delete image");
+                },
+                success: function(data) {
+                    $('.imageRow' + id).hide();
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

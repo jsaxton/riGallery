@@ -1,0 +1,27 @@
+-Consistent nomenclature (image instead of picture or photo? Use photo since this is a "photo" gallery, even though we're not constrained to photographs?)
+--Use iamge
+-Figure out best way to store test content
+-Show a default picture if something goes wrong
+-Add support for img srcset -- seems like a better idea
+-Statistics on which photo resolutions get downloaded the most
+--Maybe piggyback off of existing analytics?
+
+Things to do if the idea works
+-Clean up requirements.txt
+-front end code to manually specify a quality level
+-Configurable thumbnail size?
+
+UI:
+-index.html shows all albums
+-Logging in can:
+--Expose an admin console
+--Expose certain pictures
+
+Wishlist:
+-Configurable logging in config.py
+-Ability to change username and password without editing config.py
+-Albums should have a user-editable visible attribute
+-Pictures should also have a visible attribute, only set after all transcodes complete
+-Ability to edit picture descriptions/captions
+-Ability to delete picture from album
+-Don't print a caption if it is "None"

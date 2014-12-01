@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <script src="{{url_for("static", filename="contrib/jquery/jquery-2.1.1.min.js")}}"></script>
+    <script src="{{url_for("static", filename="contrib/swipebox/js/jquery.swipebox.min.js")}}"></script>
+    <link rel="stylesheet" href="{{url_for("static", filename="contrib/swipebox/css/swipebox.min.css")}}">
+    <script type="text/javascript">
+        ;( function( $ ) {
+
+            $( '.swipebox' ).swipebox();
+
+            } )( jQuery );
+    function width(){
+           return window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth||0;
+    }
+    function height(){
+           return window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight||0;
+    }
+    </script>
+{% endblock %}
+
+{% block content %}
+<h3>{{album.name}}</h3>
+<p>{{album.description}}</p>
+    {% for image in album.images %}
+    <a href='{{url_for('picture', id=image.id)}}' id="image{{image.id}}" class='swipebox' title='{{image.description}}'><img src='{{url_for('thumbnail', id=image.id)}}' alt='{% if image.description != None %}{{image.description}}{% endif %}'/></a>
+    {% else %}
+    No Images
+    {% endfor %}
+    <script>
+        {% for image in album.images %}
+        document.getElementById("image{{image.id}}").href += "/" + width() + "/" + height()
+        {% endfor %}
+    </script>
+{% endblock %}
