@@ -170,29 +170,23 @@ def viewAlbum(id):
 def uploadPicture(albumId):
     successfulUpload = False
     album = Album.query.filter_by(id=albumId).first()
-    print "Test 1"
-    print request.files["file"]
     if "file" not in request.files or album == None:
         abort(404)
     filename = secure_filename(request.files["file"].filename)
     filename = Image.make_unique_filename(filename)
     image = Image(originalFilename = filename, uploadDate = datetime.utcnow(), albumId=albumId)
 
-    print "Test 2"
     # Ensure upload directory exists, write file
     try:
         if not os.path.isdir(app.config['UPLOADED_IMAGES_DEST']):
             os.makedirs(app.config['UPLOADED_IMAGES_DEST'])
-        print app.config['UPLOADED_IMAGES_DEST']
         savePath = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
-        print savePath
         request.files["file"].save(savePath)
     except:
         app.logger.error("Failed to save uploaded image to %s [%s]", savePath, sys.exc_info()[0])
         abort(404)
 
     # Verify PIL can open the image
-    print "Test 3"
     try:
         PIL.Image.open(os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)) # TODO: memory is faster than disk
         successfulUpload = True
@@ -200,7 +194,6 @@ def uploadPicture(albumId):
         flash("Not a valid image")
         os.unlink(os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename))
         abort(404)
-    print "Test 4"
     if successfulUpload:
         db.session.add(image)
         db.session.flush()

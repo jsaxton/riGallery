@@ -14,6 +14,8 @@ It's better for image gallery viewers too, because images will load much faster 
 ## Install
 * Install python and virtualenv if not already installed
 * Run setup.sh
+* Run db\_create.py
+** If you get a "pkg_resources.DistributionNotFound: sqlalchemy-migrate" error, try installing it with `flask/bin/easy_install sqlalchemy-migrate`. Sometimes the pip installation doesn't work for some reason.
 
 ## Getting Started
 * Go to the admin console (default credentials are admin/password, which you should edit via config.py)
