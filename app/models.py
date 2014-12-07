@@ -43,7 +43,7 @@ class ImageInstance(db.Model):
     def getPath(self):
         if self.isOriginal:
             return os.path.join(app.config['UPLOADED_IMAGES_DEST'], self.image.originalFilename)
-        if self.verticalResolution == 200: # TODO: Get rid of special case
+        if self.verticalResolution == app.config['THUMBNAIL_HEIGHT']:
             return os.path.join(app.config['THUMBNAIL_DIR'], self.image.originalFilename)
         else:
             return os.path.join(app.config['IMAGE_ROOT_DIR'], str(self.verticalResolution), self.image.originalFilename)
