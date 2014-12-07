@@ -68,6 +68,15 @@ def createScaledImages(originalFilename, imageId):
 
     db.session.commit()
 
+def deleteImageFiles(id):
+    imageInstances = ImageInstance.query.filter_by(imageId=id)
+    for image in imageInstances:
+        try:
+            os.unlink(image.getPath())
+        except:
+            app.logger.warning("Failed to delete %s [%s]", image.getPath(), sys.exc_info()[0])
+
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -102,6 +111,8 @@ def deletePicture(id=0):
         app.logger.warning("Image %d doesn't exist", int(id))
         abort(404)
 
+    deleteImageFiles(id)
+
     # Delete Image (the cascade will delete the ImageInstances)
     albumId = image.albumId
     db.session.delete(image)
@@ -111,9 +122,11 @@ def deletePicture(id=0):
     if album != None:
         album.numImages = album.images.count()
 
-    # TODO: Delete images from disk
-
-    # TODO: Update album cover image if necessary
+        # Update cover image if necessary
+        if album.coverImageId == id:
+            album.coverImageId = None
+            if album.numImages > 0:
+                album.coverImageId = album.images.first().id
 
     db.session.commit()
     return ""
@@ -145,14 +158,16 @@ def editAlbum(id):
         db.session.commit()
     return render_template('editAlbum.html', editAlbumForm=form, album=album, maxUploadMb=app.config['MAX_CONTENT_LENGTH_MB'])
 
+# TODO: Fix tiny race condition that probably doesn't actually matter
 @app.route('/deleteAlbum/<int(min=1):id>', methods=['POST'])
 @basic_auth.required
 def deleteAlbum(id):
     album = Album.query.filter_by(id=id).first()
     if album == None:
         abort(404)
+    for image in album.images:
+        deleteImageFiles(image.id)
     db.session.delete(album)
-    # TODO: Delete images
     db.session.commit()
     return admin()
 

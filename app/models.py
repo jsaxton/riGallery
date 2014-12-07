@@ -41,8 +41,10 @@ class ImageInstance(db.Model):
 
     # Returns the path to the image on disk
     def getPath(self):
-        if (self.isOriginal):
+        if self.isOriginal:
             return os.path.join(app.config['UPLOADED_IMAGES_DEST'], self.image.originalFilename)
+        if self.verticalResolution == 200: # TODO: Get rid of special case
+            return os.path.join(app.config['THUMBNAIL_DIR'], self.image.originalFilename)
         else:
             return os.path.join(app.config['IMAGE_ROOT_DIR'], str(self.verticalResolution), self.image.originalFilename)
 
@@ -54,7 +56,7 @@ class Album(db.Model):
     name = db.Column(db.String(150))
     description = db.Column(db.Text)
     creationDate = db.Column(db.DateTime)
-    images = db.relationship('Image', backref='album', lazy='dynamic')
+    images = db.relationship('Image', backref='album', lazy='dynamic', cascade="all, delete")
     coverImageId = db.Column(db.Integer) # TODO: Get foreign key working
     numImages = db.Column(db.Integer)
 

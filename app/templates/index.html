@@ -12,7 +12,7 @@
     <i>{{album.numImages}} Images</i><br>
     {% endif %}
     <!-- TODO: Handle album.coverImageId == 0, None -->
-    <a href='{{url_for('viewAlbum', id=album.id)}}' id="{{album.id}}" title='{{album.description}}'><img src='{{url_for('thumbnail', id=1)}}' alt='{{album.description}}'/></a><br>
+    <a href='{{url_for('viewAlbum', id=album.id)}}' id="{{album.id}}" title='{{album.description}}'><img src='{{url_for('thumbnail', id=album.coverImageId)}}' alt='{{album.description}}'/></a><br>
     {{album.description}}
     </td>
     {% endif %}
