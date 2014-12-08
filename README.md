@@ -12,7 +12,7 @@ This approach is better for image gallery administrators, because you don't need
 It's better for image gallery viewers too, because images will load much faster at the appropriate resolution for whatever device you're on, whether it's an old cell phone display or a 4K monitor.
 
 ## Install
-* Install python and virtualenv if not already installed
+* Install python, virtualenv, and libjpeg-dev if not already installed
 * Run setup.sh
 * Run db\_create.py
 ** If you get a "pkg_resources.DistributionNotFound: sqlalchemy-migrate" error, try installing it with `flask/bin/easy_install sqlalchemy-migrate`. Sometimes the pip installation doesn't work for some reason.

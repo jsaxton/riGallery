@@ -12,6 +12,7 @@ from decorators import async
 # TODO: Look into using something like https://github.com/danielgtaylor/jpeg-archive
 @async
 def createScaledImages(originalFilename, imageId):
+    # TODO: This can trigger an exception
     orig = PIL.Image.open(os.path.join(app.config['UPLOADED_IMAGES_DEST'], originalFilename))
     origWidth, origHeight = orig.size
     if origHeight == 0 or origWidth == 0:
@@ -240,15 +241,14 @@ def picture(id, clientWidth=0, clientHeight=0):
         image = open(imageInstance.getPath())
         return Response(image.read(), mimetype="image/jpeg")
 
-    # TODO: What about images in portrait mode? Probably want something more intelligent here
-    if clientHeight > clientWidth:
+    retImage = images.first()
+    imageAspectRatio = float(retImage.horizontalResolution) / float(retImage.verticalResolution)
+    if clientHeight > clientWidth and imageAspectRatio < 1:
         # Assume user can rotate device
         temp = clientHeight
         clientHeight = clientWidth
         clientWidth = clientHeight
     clientAspectRatio = float(clientWidth) / float(clientHeight)
-    retImage = images.first()
-    imageAspectRatio = float(retImage.horizontalResolution) / float(retImage.verticalResolution)
 
     if imageAspectRatio > clientAspectRatio:
         # Letterbox case, constrained by clientWidth

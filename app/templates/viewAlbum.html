@@ -7,14 +7,20 @@
     <script type="text/javascript">
         ;( function( $ ) {
 
-            $( '.swipebox' ).swipebox();
+                $( '.swipebox' ).swipebox({upscaleImages: true});
 
             } )( jQuery );
     function width(){
-           return window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth||0;
+        // On high density displays, request a lower resolution image and upscale it
+        var pixelRatio = /* window.devicePixelRatio || */ 1;
+        var displayWidth = window.screen.width || 0;
+        return pixelRatio * displayWidth;
     }
     function height(){
-           return window.innerHeight||document.documentElement.clientHeight||document.body.clientHeight||0;
+        // On high density displays, request a lower resolution image and upscale it
+        var pixelRatio = /* window.devicePixelRatio || */ 1;
+        var displayHeight = window.screen.height || 0;
+        return pixelRatio * displayHeight;
     }
     </script>
 {% endblock %}
