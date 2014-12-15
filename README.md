@@ -15,16 +15,32 @@ It's better for image gallery viewers too, because images will load much faster 
 * Install python, virtualenv, and libjpeg-dev if not already installed
 * Run setup.sh
 * Run db\_create.py
-** If you get a "pkg_resources.DistributionNotFound: sqlalchemy-migrate" error, try installing it with `flask/bin/easy_install sqlalchemy-migrate`. Sometimes the pip installation doesn't work for some reason.
+    * If you get a "pkg\_resources.DistributionNotFound: sqlalchemy-migrate" error, try installing it with `flask/bin/easy_install sqlalchemy-migrate`. Sometimes the pip installation doesn't work for some reason.
+
+## Deploying with Apache and mod\_wsgi
+First, ensure the paths in riGallery.wsgi are correct. 
+
+Next, ensure your VirtualHost entry has the following:
+        WSGIDaemonProcess yourapplication user=www-data group=www-data threads=8
+        WSGIScriptAlias /gallery /path/to/riGallery/riGallery.wsgi
+        WSGIPassAuthorization On
+
+        <Directory /path/to/riGallery>
+                WSGIProcessGroup yourapplication
+                WSGIApplicationGroup %{GLOBAL}
+                Order deny,allow
+                Allow from all
+        </Directory>
+
+After restarting apache, you should be able to access the gallery by going to "/gallery" (or something else if you'd prefer). For improved security, consider changing the user and group to something other than www-data.
+
+Note that SQLAlchemy requires write access to the database's parent directory.
 
 ## Getting Started
 * Go to the admin console (default credentials are admin/password, which you should edit via config.py)
 * Add an album
 * Edit the album
 * Add pictures to the album
-
-## Upgrades
-* There will be a mechanism to handle upgrades between releases
 
 ## Dependencies
 riGallery is built upon a number of third party libraries and frameworks, including:

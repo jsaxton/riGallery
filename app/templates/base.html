@@ -1,10 +1,10 @@
 <html>
 <head>
     {% block head %}{% endblock %}
-    <title>riGallery</title> <!-- TODO: This should be customizable -->
+    <title>riGallery - A Responsive Image Gallery</title> {# TODO: This should be customizable #}
 </head>
 <body>
-<a href="{{ url_for('index') }}">Home</a> | <a href="{{ url_for('admin') }}">Admin Console</a><br>
+<a href="{{ url_for('index') }}">Albums</a> | <a href="{{ url_for('admin') }}">Admin Console</a><br>
 {% macro render_field(field) %}
   <div>{{ field.label }}
   {{ field(**kwargs)|safe }}

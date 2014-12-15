@@ -207,24 +207,22 @@ def uploadPicture(albumId):
         PIL.Image.open(os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)) # TODO: memory is faster than disk
         successfulUpload = True
     except:
-        flash("Not a valid image")
         os.unlink(os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename))
         abort(404)
     if successfulUpload:
         db.session.add(image)
         db.session.flush()
         db.session.commit()
-        flash("Successfully uploaded image") # TODO: flash doesn't make sense anymore
         createScaledImages(image.originalFilename, image.id)
-    else:
-        flash("Failed to upload image") # TODO: flash doesn't make sense anymore
 
-    # Update album
-    album.numImages = album.images.count()
-    if album.coverImageId == 0:
-        album.coverImageId = image.id
-    db.session.add(album)
-    db.session.commit()
+        # Update album
+        album.numImages = album.images.count()
+        if album.coverImageId == 0:
+            album.coverImageId = image.id
+        db.session.add(album)
+        db.session.commit()
+    else:
+        abort(404)
     return ""
 
 @app.route('/picture/<int(min=1):id>')

@@ -13,7 +13,7 @@
     function width(){
         // On high density displays, request a lower resolution image and upscale it
         var pixelRatio = /* window.devicePixelRatio || */ 1;
-        var displayWidth = window.screen.width || 0;
+        var displayWidth = window.screen.width || 0; // Apparently screen.width is updated in Android upon a rotation but not in iOS
         return pixelRatio * displayWidth;
     }
     function height(){

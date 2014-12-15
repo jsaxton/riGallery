@@ -1,21 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <table><tr>
-    {% for album in albums %}
-    {% if album.numImages > 0 %}
-    <td valign="top">
-    <b>{{album.name}}</b><br>
-    {% if album.numImages == 1 %}
-    <i>{{album.numImages}} Image</i><br>
-    {% else %}
-    <i>{{album.numImages}} Images</i><br>
-    {% endif %}
-    <!-- TODO: Handle album.coverImageId == 0, None -->
-    <a href='{{url_for('viewAlbum', id=album.id)}}' id="{{album.id}}" title='{{album.description}}'><img src='{{url_for('thumbnail', id=album.coverImageId)}}' alt='{{album.description}}'/></a><br>
-    {{album.description}}
-    </td>
-    {% endif %}
-    {% endfor %}
-    </tr></table>
+<div style="display:inline-block;">
+        {% for album in albums %}
+        {% if album.numImages > 0 %}
+            {# TODO: use real width or somehow set it with Javascript #}
+            <div id="container{{album.id}}" style="display: inline-block;max-width:200px" >
+                <div>
+                        <b>{{album.name}}</b><br>
+                        {% if album.numImages == 1 %}
+                        <i>{{album.numImages}} Image</i>
+                        {% else %}
+                        <i>{{album.numImages}} Images</i>
+                        {% endif %}
+                </div>
+                            {# TODO: Handle album.coverImageId == 0, None #}
+                        <a href='{{url_for('viewAlbum', id=album.id)}}' id="{{album.id}}" title='{{album.description}}'><img style="vertical-align: bottom;" src='{{url_for('thumbnail', id=album.coverImageId)}}' alt='{{album.description}}'/></a>
+                </div>
+        {% endif %}
+        {% endfor %}
+    </div>
 {% endblock %}
+
