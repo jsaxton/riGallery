@@ -3,9 +3,9 @@
 {% block content %}
 <div style="display:inline-block;">
         {% for album in albums %}
-        {% if album.numImages > 0 %}
+        {% if album.numImages > 0 and not album.passwordHash %}
             {# TODO: use real width or somehow set it with Javascript #}
-            <div id="container{{album.id}}" style="display: inline-block;max-width:200px" >
+            <div id="container{{album.id}}" style="display: inline-block;{#max-width:200px#}" >
                 <div>
                         <b>{{album.name}}</b><br>
                         {% if album.numImages == 1 %}

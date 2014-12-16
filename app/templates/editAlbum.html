@@ -53,6 +53,8 @@
     {{ render_field(editAlbumForm.name) }}
     {{ render_field(editAlbumForm.description) }}
     {{ render_field(editAlbumForm.coverImageId) }}
+    {{ render_field(editAlbumForm.passwordProtected) }}
+    {{ render_field(editAlbumForm.passwordHash) }}
     <div><input type="submit" value="Edit Album">
 </form>
 <form method=POST action="{{ url_for('deleteAlbum', id=album.id) }}" name=deleteAlbum>

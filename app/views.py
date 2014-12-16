@@ -1,10 +1,11 @@
 import os
 import sys
 import PIL.Image
+import hashlib
 from datetime import datetime
 from app import app, basic_auth, db
-from forms import CreateAlbumForm, EditAlbumForm
-from flask import request, render_template, Response, abort, flash
+from forms import AlbumAuthenticateForm, CreateAlbumForm, EditAlbumForm
+from flask import redirect, request, render_template, session, Response, abort, url_for
 from werkzeug import secure_filename
 from models import Image, ImageInstance, Album
 from decorators import async
@@ -77,6 +78,11 @@ def deleteImageFiles(id):
         except:
             app.logger.warning("Failed to delete %s [%s]", image.getPath(), sys.exc_info()[0])
 
+def getAlbumPasswordHash(creationDate, password):
+    # Could just use unicode(creationDate), but in the unlikely event there are
+    # any changes to how that is represented, the salt completely breaks
+    dateStr = creationDate.strftime("%Y-%m-%d %H:%M:%S")
+    return hashlib.sha256(dateStr + password).hexdigest()
 
 @app.route('/')
 @app.route('/index')
@@ -98,7 +104,13 @@ def admin(createAlbumForm=None):
 def createAlbum():
     form = CreateAlbumForm(prefix="createAlbum")
     if form.validate_on_submit():
-        album = Album(name=form.name.data, description=form.description.data, creationDate=datetime.utcnow(), numImages=0, coverImageId=0)
+        album = Album(name=form.name.data, 
+                      description=form.description.data, 
+                      creationDate=datetime.utcnow(), 
+                      numImages=0, 
+                      coverImageId=0)
+        if form.passwordProtected.data and form.passwordHash.data:
+            album.passwordHash = getAlbumPasswordHash(album.creationDate, form.passwordHash.data)
         db.session.add(album)
         db.session.commit()
     return admin(createAlbumForm=form)
@@ -149,13 +161,23 @@ def editAlbum(id):
     album = Album.query.filter_by(id=id).first()
     if album is None:
         abort(404)
-    form = EditAlbumForm(obj=album, prefix="album")
+
+    # Initialize password protected checkbox
+    passwordProtected = False
+    if album.passwordHash:
+        passwordProtected = True
+
+    form = EditAlbumForm(obj=album, prefix="album", passwordProtected=passwordProtected)
     form.coverImageId.choices = [(image.id, image.id) for image in album.images]
     if form.validate_on_submit():
         album.name = form.name.data
         album.description = form.description.data
         album.coverImageId = form.coverImageId.data
         album.numImages = album.images.count()
+        if form.passwordProtected.data and form.passwordHash.data:
+            album.passwordHash = getAlbumPasswordHash(album.creationDate, form.passwordHash.data)
+        else:
+            album.passwordHash = None
         db.session.commit()
     return render_template('editAlbum.html', editAlbumForm=form, album=album, maxUploadMb=app.config['MAX_CONTENT_LENGTH_MB'])
 
@@ -172,11 +194,28 @@ def deleteAlbum(id):
     db.session.commit()
     return admin()
 
-@app.route('/viewAlbum/<int(min=1):id>', methods=['GET'])
+# TODO: Come up with something better. It's still trivial to break this - just GET all the pictures from 1..$maxPictureId.
+@app.route('/albumAuthenticate/<int(min=1):id>', methods=['POST'])
+def albumAuthenticate(id):
+    album = Album.query.filter_by(id=id).first()
+    if album == None:
+        abort(404)
+    if "viewAlbum" + str(id) not in session:
+        form = AlbumAuthenticateForm()
+        if form.validate_on_submit():
+            if getAlbumPasswordHash(album.creationDate, form.password.data) == album.passwordHash:
+                session["viewAlbum" + str(id)] = True
+    return redirect(url_for("viewAlbum", id=id))
+
+@app.route('/viewAlbum/<int(min=1):id>', methods=['GET', 'POST'])
 def viewAlbum(id):
     album = Album.query.filter_by(id=id).first()
     if album == None:
         abort(404)
+    if album.passwordHash:
+        authenticated = "viewAlbum" + str(id) in session
+        if not authenticated:
+            return render_template('albumAuthenticate.html', album=album, albumAuthenticateForm=AlbumAuthenticateForm())
     # TODO: order images
     return render_template('viewAlbum.html', album=album)
 

@@ -17,6 +17,8 @@
     {{ createAlbumForm.hidden_tag() }}
     {{ render_field(createAlbumForm.name) }}
     {{ render_field(createAlbumForm.description) }}
+    {{ render_field(createAlbumForm.passwordProtected) }}
+    {{ render_field(createAlbumForm.passwordHash) }} {# TODO: Only expose this if the password checkbox is checked #}
     <div><input type="submit" value="Create Album"></div>
 </form>
 <h2>Edit Albums</h2>

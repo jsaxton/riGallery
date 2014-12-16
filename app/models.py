@@ -59,6 +59,7 @@ class Album(db.Model):
     images = db.relationship('Image', backref='album', lazy='dynamic', cascade="all, delete")
     coverImageId = db.Column(db.Integer) # TODO: Get foreign key working
     numImages = db.Column(db.Integer)
+    passwordHash = db.Column(db.String(128)) # TODO: right length
 
     def __repr__(self):
         return "<Album %r>" % self.id
