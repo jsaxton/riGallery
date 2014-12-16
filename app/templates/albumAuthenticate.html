@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>{{album.name}}</h3>
+<p>This album is password protected. Please provide the password to continue.</p>
+<form method=POST action="{{ url_for('albumAuthenticate', id=album.id) }}" name=albumAuthenticate>
+    {{ albumAuthenticateForm.hidden_tag() }}
+    {{ render_field(albumAuthenticateForm.password) }}
+    <input type="submit" value="Continue">
+</form>
+{% endblock %}
