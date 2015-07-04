@@ -48,15 +48,12 @@ def createScaledImages(originalFilename, imageId):
             os.makedirs(saveDir)
         out = file(os.path.join(saveDir, originalFilename), "w")
 
-        # TODO: All things equal faster compression is nice, but optimizing for better image compression should be the ultimate goal.
-        # If there is enough downscaling, use a two pass algorithm to downsize the image
-        # Pass 1: Using a nearest neighbor algorithm, create an intermediate image that is twice the size of the final thumbnail
-        # Pass 2: Using the ANTIALIAS algorithm, create the final thumbnail
-        # Some guy's blog said that this provided a good tradeoff between speed and quality, and it sounds reasonable, so I'm going to go with it
-        if 3*scaledWidth < origWidth:
-            scaled = orig.resize( (2*scaledWidth, 2*scaledHeight), PIL.Image.NEAREST ).resize( (scaledWidth, scaledHeight), PIL.Image.ANTIALIAS)
-        else:
-            scaled = orig.resize( (scaledWidth, scaledHeight), PIL.Image.ANTIALIAS)
+        # The goal is to create the highest quality images possible, even if
+        # that is computationally expensive. There seems to be a consensus that
+        # the Lanczos filter is the best algorithm to use when downscaling
+        # images. The ANTIALIAS constant is left for backwards compatibility
+        # and is an alias for LANCZOS.
+        scaled = orig.resize( (scaledWidth, scaledHeight), PIL.Image.ANTIALIAS)
 
         try:
             # TODO: Use same image format as original?
