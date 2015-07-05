@@ -2,6 +2,7 @@ import os
 import sys
 import PIL.Image
 import hashlib
+from _version import __version__
 from datetime import datetime
 from app import app, basic_auth, db
 from forms import AlbumAuthenticateForm, CreateAlbumForm, EditAlbumForm
@@ -9,6 +10,10 @@ from flask import redirect, request, render_template, session, Response, abort, 
 from werkzeug import secure_filename
 from models import Image, ImageInstance, Album
 from decorators import async
+
+@app.context_processor
+def get_version_string():
+    return dict(version_string=__version__)
 
 # TODO: Look into using something like https://github.com/danielgtaylor/jpeg-archive
 @async
