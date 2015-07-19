@@ -16,7 +16,7 @@ It's better for image gallery viewers too, because images will load much faster 
 * Run setup.sh
 * Run flask/bin/alembic upgrade head
 
-# Upgrade
+## Upgrade
 * Run flask/bin/alembic upgrade head
 
 ## Deploying with Apache and mod\_wsgi
