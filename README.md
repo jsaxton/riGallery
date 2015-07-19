@@ -14,8 +14,10 @@ It's better for image gallery viewers too, because images will load much faster 
 ## Install
 * Install python, virtualenv, and libjpeg-dev if not already installed
 * Run setup.sh
-* Run db\_create.py
-    * If you get a "pkg\_resources.DistributionNotFound: sqlalchemy-migrate" error, try installing it with `flask/bin/easy_install sqlalchemy-migrate`. Sometimes the pip installation doesn't work for some reason.
+* Run flask/bin/alembic upgrade head
+
+# Upgrade
+* Run flask/bin/alembic upgrade head
 
 ## Deploying with Apache and mod\_wsgi
 First, ensure the paths in riGallery.wsgi are correct. 
@@ -46,6 +48,7 @@ Note that SQLAlchemy requires write access to the database's parent directory.
 riGallery is built upon a number of third party libraries and frameworks, including:
 * Flask
 * SQL-Alchemy
+* Alembic
 * PIL
 * jquery
 * jquery-ui
@@ -58,3 +61,4 @@ riGallery is built upon a number of third party libraries and frameworks, includ
 * UI needs a huge facelift. Image viewer should have priority over admin console.
 * Some kind of analytics - Image X got viewed Y times, breakdown by resolution
 * Fix race conditions via an "image visible" attribute
+* Ability to reorder images via the admin console
