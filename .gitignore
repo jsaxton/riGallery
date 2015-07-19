@@ -1,0 +1,9 @@
+1080/
+480/
+720/
+app.db
+flask/
+thumbs/
+uploads/
+*.swp
+*.pyc
