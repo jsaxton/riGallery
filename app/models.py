@@ -8,6 +8,7 @@ class Image(db.Model):
     description = db.Column(db.Text)
     albumId = db.Column(db.Integer, db.ForeignKey('album.id'))
     scaledImages = db.relationship('ImageInstance', backref=db.backref('image'), cascade="all, delete")
+    imageOrder = db.Column(db.Integer)
 
     # TODO: Is it worthwhile to come up with a better way of doing this? Seems
     # like a potential DOS attack vector? Not sure if the ORM is smart enough
