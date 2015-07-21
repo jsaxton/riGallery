@@ -57,7 +57,7 @@ class Album(db.Model):
     name = db.Column(db.String(150))
     description = db.Column(db.Text)
     creationDate = db.Column(db.DateTime)
-    images = db.relationship('Image', backref='album', lazy='dynamic', cascade="all, delete")
+    images = db.relationship('Image', backref='album', lazy='dynamic', cascade="all, delete", order_by="Image.imageOrder")
     coverImageId = db.Column(db.Integer) # TODO: Get foreign key working
     numImages = db.Column(db.Integer)
     passwordHash = db.Column(db.String(128)) # TODO: right length
