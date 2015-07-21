@@ -62,3 +62,4 @@ riGallery is built upon a number of third party libraries and frameworks, includ
 * Some kind of analytics - Image X got viewed Y times, breakdown by resolution
 * Fix race conditions via an "image visible" attribute
 * Ability to reorder images via the admin console
+* Support non-JPEG images

@@ -86,6 +86,14 @@ def getAlbumPasswordHash(creationDate, password):
     dateStr = creationDate.strftime("%Y-%m-%d %H:%M:%S")
     return hashlib.sha256(dateStr + password).hexdigest()
 
+def normalizeImageOrder(albumId):
+    images = Image.query.filter_by(albumId=albumId).order_by(Image.imageOrder)
+    i = 1
+    for image in images:
+        image.imageOrder = i
+        i += 1
+        db.session.add(image)
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -142,6 +150,9 @@ def deletePicture(id=0):
             album.coverImageId = None
             if album.numImages > 0:
                 album.coverImageId = album.images.first().id
+
+    # Ensure images are monotonically increasing
+    normalizeImageOrder(image.albumId)
 
     db.session.commit()
     return ""
@@ -231,7 +242,7 @@ def uploadPicture(albumId):
         abort(404)
     filename = secure_filename(request.files["file"].filename)
     filename = Image.make_unique_filename(filename)
-    image = Image(originalFilename = filename, uploadDate = datetime.utcnow(), albumId=albumId)
+    image = Image(originalFilename = filename, uploadDate = datetime.utcnow(), albumId=albumId, imageOrder=(album.numImages+1))
 
     # Ensure upload directory exists, write file
     try:
