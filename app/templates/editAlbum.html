@@ -120,6 +120,9 @@ $(function() {
     <form id="updateDescription{{image.id}}" action={{url_for('updatePictureDescription', id=image.id)}} method="POST" class="imageDescription">
         <textarea rows="2" cols="70" name="description">{% if image.description != None %}{{image.description}}{% endif %}</textarea>
     </form>
+    <form id="updateOrder{{image.id}}" action={{url_for('updateOrder', id=image.id)}} method="POST" class="imageDescription">
+        <input type="text" size="5" name="order" value="{% if image.imageOrder != None %}{{image.imageOrder}}{% endif %}">
+    </form>
     </td></tr>
     {% else %}
     No Photos

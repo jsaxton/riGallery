@@ -168,6 +168,18 @@ def updatePictureDescription(id):
     db.session.commit()
     return ""
 
+@app.route('/updateOrder/<int(min=1):id>', methods=['POST'])
+@basic_auth.required
+def updateOrder(id):
+    image = Image.query.filter_by(id=id).first()
+    if image == None:
+        app.logger.warning("Image %d doesn't exist", int(id))
+        abort(404)
+    # TODO: Sanity check inputs
+    image.imageOrder = request.form.get('order', '', type=int)
+    db.session.commit()
+    return ""
+
 @app.route('/editAlbum/<int(min=1):id>', methods=['POST', 'GET'])
 @basic_auth.required
 def editAlbum(id):
